@@ -1,1 +1,1 @@
-# GAme Of Thrones GraphQL
+# Game of Thrones GraphQL
