@@ -1,1 +1,1 @@
-# got-gql
+# Game of Thrones Character List - GraphQL
