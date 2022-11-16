@@ -1,5 +1,8 @@
-const{ApolloServer, gql} = require ('apollo-server');
-
+import { ApolloServer } from '@apollo/server';
+import { startStandaloneServer } from '@apollo/server/standalone';
+import { gql } from 'apollo-server';
+import { GotAPI } from './got-api';
+import { resolvers } from './resolvers';
 const typeDefs = gql`
  
 #character general information 
@@ -34,37 +37,47 @@ getCharacters: [Character!]!
 
 
  
-const mocks = {
+
+
+
+interface ContextValue {
+  dataSources: {
+    gotAPI: GotAPI;
     
-    Character: () => ({
-      id: () => '583',
-     name: () => 'Jon Snow',
-     gender: () => 'Male',
-     born: () => '283 AD',
-     died: () => '',
-     culture: () => 'Northmen',
-    //  title: () => 
-    //    'King of the north'
-    //  ,
-    //  aliases: () => 
-    //     'Lord commander'
-    
-    //  ,
-        
-    
-    
-  })
-};
+  };
+}
+// The ApolloServer constructor requires two parameters: your schema
+// definition and your set of resolvers.
+const server = new ApolloServer<ContextValue>({
+  typeDefs,
+  resolvers,
+});
 
-const server = new ApolloServer({typeDefs, mocks});
+// Passing an ApolloServer instance to the `startStandaloneServer` function:
+//  1. creates an Express app
+//  2. installs your ApolloServer instance as middleware
+//  3. prepares your app to handle incoming requests
+const { url } = await startStandaloneServer(server, {
+  context: async () => {
+    const { cache } = server;
+  
+  return{
+dataSources: {
+  gotAPI: new GotAPI({cache})
+  
+}
+  }
+  }
+});
+
+console.log(`🚀  Server ready at: ${url}`);
 
 
 
-
-server.listen().then(() => {
-    console.log(`
-      🚀  Server is running!
-      🔉  Listening on port 4000
-      📭  Query at http://localhost:4000
-    `);
-  });
+// server.listen().then(() => {
+//     console.log(`
+//       🚀  Server is running!
+//       🔉  Listening on port 4000
+//       📭  Query at http://localhost:4000
+//     `);
+//   });
