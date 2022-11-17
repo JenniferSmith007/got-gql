@@ -12,31 +12,33 @@ gender: String
 born: String
 died: String
 culture: String
-# titles: Title
-# aliases: Aliase
+titles: [Title]
+
 }
-#characters title
-# type Title {
+# characters title
+type Title {
    
-# titles: String 
-# }
-# #different titles Character goes by
-# type Aliase {
-# aliases: String
-# }
+titles: String 
+}
+#different titles Character goes by
+
 
 type Query {
 #Get characters for homepage
-hello(name: String) : String!
-getCharacters(id: Int): Character!
+title: [Character!]!
+getCharacters: [Character!]!
+getCharacter(id: Int): Character!
 }
 `;
 const resolvers = {
     Query: {
-        hello: (_, { name }) => `hello ${name || `world`}`,
-        getCharacters: async (_, { id }) => {
-            const response = await fetch(`https://anapioficeandfire.com/api/characters/${id}`);
-            return response.json();
+        getCharacters: async () => {
+            const charactersResponse = await fetch(`https://anapioficeandfire.com/api/characters`);
+            return charactersResponse.json();
+        },
+        getCharacter: async (_, { id }) => {
+            const characterResponse = await fetch(`https://anapioficeandfire.com/api/characters/${id}`);
+            return characterResponse.json();
         }
     }
 };
