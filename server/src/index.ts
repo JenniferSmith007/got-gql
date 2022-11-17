@@ -1,34 +1,26 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import { gql } from 'apollo-server';
-import { GotAPI } from './got-api';
-import { resolvers } from './resolvers';
+import { RESTDataSource } from '@apollo/datasource-rest';
+
 const typeDefs = gql`
  
 #character general information 
 type Character {
-id: ID!
+
 name: String!
 gender: String 
 born: String
 died: String
 culture: String
-# titles: Title
-# aliases: Aliase
+
 }
-#characters title
-# type Title {
-   
-# titles: String 
-# }
-# #different titles Character goes by
-# type Aliase {
-# aliases: String
-# }
+
 
 type Query {
 #Get characters for homepage
-getCharacters: [Character!]!
+
+getCharacter(id: Int): Character!
 }
 `;
 
@@ -36,9 +28,27 @@ getCharacters: [Character!]!
 
 
 
+
+ class GotAPI extends RESTDataSource {
+  override baseURL = 'https://anapioficeandfire.com/api/';
+
+  async getCharacter(id): Promise <any> {
+    return this.get<any>(`characters/${encodeURIComponent(id)}`);
+  
+  }
+  
+ 
+}
  
 
-
+const resolvers = {
+  Query: {
+    getCharacter: async (_, { id }, { dataSources }) => {
+      return dataSources.gotAPI.getCharacter(id);
+    }
+  }
+    
+}
 
 interface ContextValue {
   dataSources: {
