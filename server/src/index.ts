@@ -3,6 +3,7 @@ import { startStandaloneServer } from '@apollo/server/standalone';
 import fetch from 'node-fetch'
 import { gql } from 'apollo-server';
 
+
 const typeDefs = gql`
  
 #character general information 
