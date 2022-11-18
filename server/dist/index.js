@@ -18,7 +18,7 @@ culture: String
 
 type Query {
 #Get characters for homepage
-
+getCharacters: [Character!]!
 getCharacter(id: Int): Character!
 }
 `;
@@ -30,11 +30,17 @@ class GotAPI extends RESTDataSource {
     async getCharacter(id) {
         return this.get(`characters/${encodeURIComponent(id)}`);
     }
+    async getCharacters() {
+        return this.get(`characters`);
+    }
 }
 const resolvers = {
     Query: {
         getCharacter: async (_, { id }, { dataSources }) => {
             return dataSources.gotAPI.getCharacter(id);
+        },
+        getCharacters: async (_, __, { dataSources }) => {
+            return dataSources.gotAPI.getCharacters();
         }
     }
 };
